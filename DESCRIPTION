@@ -1,0 +1,25 @@
+Package: nextword
+Type: Package
+Title: Next Word Prediction Implementation
+Version: 0.1.0
+Date: 2020-05-01
+Authors@R: person("Donnie", "Minnick", , "donnie.minnick@gmail.com", c("aut", "cre"))
+Description: Provides functionality that implements a next word prediction model.
+Depends: R (>= 3.6)
+License: MIT + file LICENSE
+URL: https://github.com/dtminnick/nextword
+BugReports: https://github.com/dtminnick/nextword/issues
+Encoding: UTF-8
+LazyData: true
+Imports:
+    dplyr (>= 0.8.3),
+    ggplot2 (>= 3.2.1),
+    magrittr (>= 1.5),
+    stats (>= 3.6.1),
+    usethis (>= 1.5.1),
+    utils (>= 3.6.1)
+Suggests:
+    knitr (>= 1.22),
+    rmarkdown (>= 1.12),
+    testthat (>= 2.2.1)
+RoxygenNote: 7.1.0
