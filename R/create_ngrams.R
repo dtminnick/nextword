@@ -106,10 +106,12 @@ create_ngrams <- function(corpus, n = 1) {
             # Use data frame to build frequency table.
 
             ngrams <- ngrams %>%
+
                   dplyr::group_by(ngram) %>%
                   dplyr::summarise(count = dplyr::n()) %>%
                   dplyr::arrange(dplyr::desc(count)) %>%
-                  dplyr::mutate(frequency = round(count / sum(count), 5),
+                  dplyr::mutate(ngram = stringr::str_to_lower(ngram),
+                                frequency = round(count / sum(count), 5),
                                 cumulative_count = cumsum(count),
                                 cumulative_frequency = round(cumsum(count) / sum(count), 5))
 
