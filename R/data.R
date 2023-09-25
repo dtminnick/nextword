@@ -1,22 +1,4 @@
 
-#' Blogs Dataset
-#'
-#' Description...
-#'
-#' @docType data
-#'
-#' @keywords dataset
-#'
-#' @name blogs
-#'
-#' @usage data(blogs)
-#'
-#' @format A...
-#'
-#' @author Donnie Minnick \email{donnie.minnick@gmail.com}
-
-"blogs"
-
 #' Emerson Dataset
 #'
 #' A character vector containing one sentence from Ralph Waldo Emerson's
@@ -56,24 +38,6 @@
 
 "faulkner"
 
-#' News Dataset
-#'
-#' Description...
-#'
-#' @docType data
-#'
-#' @keywords dataset
-#'
-#' @name news
-#'
-#' @usage data(news)
-#'
-#' @format A...
-#'
-#' @author Donnie Minnick \email{donnie.minnick@gmail.com}
-
-"news"
-
 #' Seuss Dataset
 #'
 #' A character vector containing the text of Dr. Seuss's children's book
@@ -93,21 +57,3 @@
 #' @author Donnie Minnick \email{donnie.minnick@gmail.com}
 
 "seuss"
-
-#' Tweets Dataset
-#'
-#' Description...
-#'
-#' @docType data
-#'
-#' @keywords dataset
-#'
-#' @name tweets
-#'
-#' @usage data(tweets)
-#'
-#' @format A...
-#'
-#' @author Donnie Minnick \email{donnie.minnick@gmail.com}
-
-"tweets"

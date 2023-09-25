@@ -1,7 +1,7 @@
 
-#' Next Word (simple)
+#' Ngram Predictor
 #'
-#' \code{next_word_simple} ...
+#' \code{ngram_predictor} ...
 #'
 #' @param source ..
 #'
@@ -23,12 +23,12 @@
 #'
 #' @export
 
-next_word_simple <- function(target_ngram,
-                      source,
-                      n = 3,
-                      dec_pos = 5,
-                      min_count = 1,
-                      simple = TRUE) {
+ngram_predictor <- function(target_ngram,
+                            source,
+                            n = 3,
+                            dec_pos = 5,
+                            min_count = 1,
+                            simple = TRUE) {
 
     tryCatch({
 
@@ -42,13 +42,13 @@ next_word_simple <- function(target_ngram,
 
     }, warning = function(w) {
 
-        warning(paste("next_word_simple: ", w, sep = ""))
+        warning(paste("ngram_predictor: ", w, sep = ""))
 
         return(NULL)
 
     }, error = function(e) {
 
-        stop(paste("next_word_simple: ", e, sep = ""))
+        stop(paste("ngram_predictor: ", e, sep = ""))
 
         return(NULL)
 

@@ -229,7 +229,8 @@ create_ngrams <- function(corpus, n = 1, dec_pos = 5, min_count = 1, simple = TR
                     dplyr::group_by(ngram) %>%
                     dplyr::summarise(count = dplyr::n()) %>%
                     dplyr::arrange(dplyr::desc(count)) %>%
-                    dplyr::filter(count >= min_count)
+                    dplyr::filter(count >= min_count) %>%
+                    dplyr::mutate(frequency = round(count / sum(count), dec_pos))
 
         } else {
 
