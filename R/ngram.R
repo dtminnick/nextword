@@ -8,7 +8,7 @@
 #' @param seed_num A single integer value used to set a seed for random
 #' number generation.  \code{seed_num} is coerced to an integer value.
 #'
-#' @sample_size A floating point number used to specify the size of the sample
+#' @param sample_size A floating point number used to specify the size of the sample
 #' as a probability; should be valued between zero and one.  A value of zero returns
 #' an empty character vector.
 #'
@@ -20,7 +20,7 @@
 #' data(faulkner)
 #'
 #' sample >- get_sample(source = faulkner,
-#'                      seed_num = 9796,
+#'                      seed_num = 091210,
 #'                      sample_size = 0.10)
 #'
 #' @export
@@ -142,12 +142,11 @@ create_corpus <- function(source) {
 #' min_count = 1 will return all ngrams with a count of 1 or more.
 #'
 #' @param simple Boolean; if TRUE, then function will return a simple table including
-#' ngram and count.  Otherwise, will return ngram, count, frequency, cumulative count
+#' ngram, count and frequency.  Otherwise, will return ngram, count, frequency, cumulative count
 #' and cumulative frequency.  Default is TRUE.
 #'
 #' @return A data frame containing the ngrams along with the count, frequency,
-#' cumulative count and cumulative frequency of each ngram.  Ngrams are created
-#' with an underscore concatenator when combining words.
+#' of each ngram.  Ngrams are created with a space concatenator when combining words.
 #'
 #' @importFrom dplyr arrange desc filter group_by mutate n summarise
 #'
