@@ -16,19 +16,19 @@ ui <- fluidPage(
 
                 sidebarPanel(
 
-                        selectInput("model", "Prediction Model", methods),
+                        fileInput("file_name", "Source File"),
 
-                        bsTooltip("model", "Select the method used to make a prediction.",
-                                  "right", options = list(container = "body")),
+                        bsTooltip("file_name", "Upload a source file containing text to be used to build a corpus.",
+                                  "right", trigger = "hover", options = list(container = "body")),
 
                         textInput("input_phrase", "Input Phrase"),
 
                         bsTooltip("input_phrase", "Provide a text phrase to be used for the prediction.",
                                   "right", options = list(container = "body")),
 
-                        fileInput("source", "Source File", multiple = TRUE),
+                        selectInput("model", "Prediction Model", methods),
 
-                        bsTooltip("source", "Upload a source file containing text to be used to build a corpus.",
+                        bsTooltip("model", "Select the method used to make a prediction.",
                                   "right", options = list(container = "body")),
 
                         numericInput("n", "Ngram Size", value = 3, min = 2, max = 6),
@@ -46,6 +46,8 @@ ui <- fluidPage(
                         bsTooltip("min_count", "Select the minimum number of ngrams to return.",
                                   "right", options = list(container = "body")),
 
+                        br(),
+
                         actionButton("predict", "Generate Prediction", class = "btn-primary"),
 
                         bsTooltip("predict", "Click to run the selected model and generate a prediction.",
@@ -55,43 +57,65 @@ ui <- fluidPage(
 
                 mainPanel(
 
-                        br(),
-
-                        strong("Next Word Predicted", align = "left"),
-
-                        verbatimTextOutput("predicted_word", placeholder = TRUE),
-
                         tabsetPanel(
 
                                 id = "tabset",
 
-                                tabPanel("Instructions"
+                                tabPanel("Prediction",
 
+                                         br(),
 
+                                         strong("Next Word Predicted", align = "left"),
+
+                                         br(),
+
+                                         verbatimTextOutput("predicted_word", placeholder = TRUE),
 
                                 ),
 
-                                tabPanel("Plot",
+                                tabPanel("Instructions",
 
                                         br(),
 
-                                        p("This plot shows the ten words determined by the algorithm to have the
-                                          highest probability of being the next word in the phrase provided by the
-                                          user. Words are plotted in decsending order of probability."),
-
-                                        plotlyOutput("plot"),
+                                        includeHTML("instructions.html")
 
                                 ),
 
                                 tabPanel("Table",
 
-                                        tableOutput("data")
+                                         br(),
+
+                                         p("Add description of this table..."),
+
+                                         tableOutput("source_data")
 
                                 ),
 
-                                tabPanel("Notes"
+                                tabPanel("Ngrams",
 
+                                         br(),
 
+                                         p("Add description of this table..."),
+
+                                         tableOutput("ngrams")
+
+                                 ),
+
+                                tabPanel("Plot",
+
+                                        br(),
+
+                                        p("Add description of this plot chart..."),
+
+                                        plotOutput("plot"),
+
+                                ),
+
+                                tabPanel("Notes",
+
+                                        br(),
+
+                                        includeHTML("notes.html")
 
                                 )
 
@@ -105,46 +129,37 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
 
-        data <- reactive({
+        dataset <- eventReactive(input$file_name, {
 
-                req(input$source)
+                read_source(as.character(input$file_name$datapath))
 
         })
 
-        # output$data <- renderTable(input$source)
+        output$source_data <- renderTable({
 
+                dataset()
+
+        })
 
         prediction <- eventReactive(input$predict, {
 
-                source <- read_source(as.character(input$source$datapath))
-
                 ngram_predictor(input$input_phrase,
-                                source,
+                                dataset(),
                                 input$n,
                                 input$dec_pos,
                                 input$min_count)
 
         })
 
-        # output$predicted_word <- renderPrint(get_predicted_word(prediction))
-
-        dataTable <- eventReactive(input$predict, {
-
+        output$ngrams <- renderTable({
+two weeks
                 prediction()
 
         })
 
-        output$data <- renderDataTable(dataTable())
+        output$plot <- renderPlot({
 
-        dataPlot <- eventReactive(input$predict, {
-
-                prediction()
-
-        })
-
-        output$plot <- renderPlotly({
-
-                ggplotly(get_plot(dataPlot()))
+                get_plot(prediction())
 
         })
 
