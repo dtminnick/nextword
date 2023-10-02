@@ -46,6 +46,11 @@ ui <- fluidPage(
                         bsTooltip("min_count", "Select the minimum number of ngrams to return.",
                                   "right", options = list(container = "body")),
 
+                        numericInput("top_results", "Maximum Return Rows", value = 10, min = 1, max = 30),
+
+                        bsTooltip("top_results", "Select the maximum number of results to return.",
+                                  "right", options = list(container = "body")),
+
                         br(),
 
                         actionButton("predict", "Generate Prediction", class = "btn-primary"),
@@ -147,7 +152,8 @@ server <- function(input, output, session) {
                                 dataset(),
                                 input$n,
                                 input$dec_pos,
-                                input$min_count)
+                                input$min_count,
+                                input$top_results)
 
         })
 
