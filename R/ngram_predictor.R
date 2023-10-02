@@ -311,6 +311,9 @@ create_ngrams <- function(corpus, n = 1, dec_pos = 5, min_count = 1, simple = TR
 #' @param min_count An integer specifying the minimum count of ngrams to return, i.e.
 #' min_count = 1 will return all ngrams with a count of 1 or more.
 #'
+#' @param top_results An integer specifying the number of rows to return in the data
+#' frame of matching ngrams, e.g. value of '10' returns the top ten rows.
+#'
 #' @param simple Boolean; if TRUE, then function will return a simple table including
 #' ngram, count and frequency.  Otherwise, will return ngram, count, frequency, cumulative count
 #' and cumulative frequency.  Default is TRUE.
@@ -344,6 +347,7 @@ ngram_predictor <- function(input_phrase,
                             n = 3,
                             dec_pos = 5,
                             min_count = 1,
+                            top_results = 10,
                             simple = TRUE) {
 
     tryCatch({
@@ -378,7 +382,8 @@ ngram_predictor <- function(input_phrase,
 
         next_word_table <- ngrams %>%
             dplyr::filter(stringr::str_starts(ngram, input_phrase)) %>%
-            dplyr::arrange(dplyr::desc(count))
+            dplyr::arrange(dplyr::desc(count), ngram) %>%
+            dplyr::top_n(top_results)
 
     }, warning = function(w) {
 
