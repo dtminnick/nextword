@@ -152,7 +152,7 @@ server <- function(input, output, session) {
         })
 
         output$ngrams <- renderTable({
-two weeks
+
                 prediction()
 
         })
