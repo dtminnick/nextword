@@ -46,7 +46,7 @@ ui <- fluidPage(
                         bsTooltip("min_count", "Select the minimum number of ngrams to return.",
                                   "right", options = list(container = "body")),
 
-                        numericInput("top_results", "Maximum Return Rows", value = 10, min = 1, max = 30),
+                        numericInput("top_results", "Maximum Return Rows", value = 10, min = 1, max = 15),
 
                         bsTooltip("top_results", "Select the maximum number of results to return.",
                                   "right", options = list(container = "body")),
@@ -154,6 +154,12 @@ server <- function(input, output, session) {
                                 input$dec_pos,
                                 input$min_count,
                                 input$top_results)
+
+        })
+
+        output$predicted_word <- renderText({
+
+                get_predicted_word(prediction())
 
         })
 
