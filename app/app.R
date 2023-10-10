@@ -1,179 +1,166 @@
 
 library("ggplot2")
+library("magrittr")
 library("plotly")
 library("shiny")
 library("shinyBS")
+library("shinydashboard")
 
 source("../R/ngram_predictor.R")
 
-methods <- c("Ngram", "Katz Backoff")
+addResourcePath("html", "c:/R/Packages/nextword/html")
 
-ui <- fluidPage(
+ui <- dashboardPage(
 
-        titlePanel("Next Word Prediction"),
+  dashboardHeader(title = "Next Word Predictor"),
 
-        sidebarLayout(
+  dashboardSidebar(
 
-                sidebarPanel(
+    sidebarMenu(
 
-                        fileInput("file_name", "Source File"),
+      menuItem("Prediction", tabName = "prediction"),
 
-                        bsTooltip("file_name", "Upload a source file containing text to be used to build a corpus.",
-                                  "right", trigger = "hover", options = list(container = "body")),
+      menuItem("Source Data", tabName = "data"),
 
-                        textInput("input_phrase", "Input Phrase"),
+      menuItem("Notes", tabName = "notes")
 
-                        bsTooltip("input_phrase", "Provide a text phrase to be used for the prediction.",
-                                  "right", options = list(container = "body")),
+    )
 
-                        selectInput("model", "Prediction Model", methods),
+  ),
 
-                        bsTooltip("model", "Select the method used to make a prediction.",
-                                  "right", options = list(container = "body")),
+  dashboardBody(
 
-                        numericInput("n", "Ngram Size", value = 3, min = 2, max = 6),
+    tabItems(
 
-                        bsTooltip("n", "Select the size of ngrams to be created, e.g. selecting 3 will create trigrams.",
-                                  "right", options = list(container = "body")),
+      tabItem(tabName = "prediction",
 
-                        numericInput("dec_pos", "Decimal Position", value = 5, min = 2, max = 6),
+        fluidRow(
 
-                        bsTooltip("dec_pos", "Select the decimal position for ngram frequencies.",
-                                  "right", options = list(container = "body")),
+          box(title = "Inputs", collapsible = TRUE, collapsed = FALSE, width = 12,
 
-                        numericInput("min_count", "Minimum Ngram Count", value = 1, min = 1, max = 6),
+            p(paste("Upload a source file you'd like to use to build a corpus",
+                    "of words on which to base your prediction.",
+                    sep = " ")),
 
-                        bsTooltip("min_count", "Select the minimum number of ngrams to return.",
-                                  "right", options = list(container = "body")),
+            fileInput("file_name", "Source File"),
 
-                        numericInput("top_results", "Maximum Return Rows", value = 10, min = 1, max = 15),
+            p(paste("Input a phrase for which you'd like to predict the",
+                    "next word.",
+                    sep = " ")),
 
-                        bsTooltip("top_results", "Select the maximum number of results to return.",
-                                  "right", options = list(container = "body")),
+            textInput("input_phrase", "Input Phrase"),
 
-                        br(),
+            p(paste("Select an ngram size, e.g. a value of '3' will generate",
+                    "trigrams.",
+                    sep = " ")),
 
-                        actionButton("predict", "Generate Prediction", class = "btn-primary"),
+            sliderInput("n", "Ngram Size", value = 3, min = 1, max = 6),
 
-                        bsTooltip("predict", "Click to run the selected model and generate a prediction.",
-                                  "right", options = list(container = "body")),
+            p(paste("Select a minimum count of ngrams, i.e. a value of '1' will return",
+                    "all ngrams that occur at least once in the source data.",
+                    sep = " ")),
 
-                ), # sidebarPanel
+            sliderInput("min_count", "Minimum Ngram Count", value = 1, min = 1, max = 10),
 
-                mainPanel(
+            p(paste("And click the button below to generate a predicton.",
+                    sep = " ")),
 
-                        tabsetPanel(
+            actionButton("predict", "Generate Prediction")
 
-                                id = "tabset",
+          ),
 
-                                tabPanel("Prediction",
+          valueBoxOutput("predicted_word", width = 12),
 
-                                         br(),
+          box(title = "Predicted Word Dispersion", collapsible = TRUE, collapsed = TRUE, width = 12,
 
-                                         strong("Next Word Predicted", align = "left"),
+            p(paste("The plot below shows the dispersion of the predicted word throughout",
+                    "the source data.",
+                    sep = " ")),
 
-                                         br(),
+          ),
 
-                                         verbatimTextOutput("predicted_word", placeholder = TRUE),
+          box(title = "Other Possible Matches", collapsible = TRUE, collapsed = TRUE, width = 12,
 
-                                ),
+            p(paste("The plot below shows the matched word along with other possible",
+                    "matched and the number of times each occurs in the source data.",
+                    sep = " ")),
 
-                                tabPanel("Instructions",
+            plotlyOutput("plot"),
 
-                                        br(),
+          )
 
-                                        includeHTML("instructions.html")
+        ),
 
-                                ),
+      ),
 
-                                tabPanel("Table",
+      tabItem(tabName = "data",
 
-                                         br(),
+        fluidRow(
 
-                                         p("Add description of this table..."),
+          box(title = "Raw Data", collapsible = TRUE, collapsed = FALSE, width = 12,
 
-                                         tableOutput("source_data")
+            tableOutput("source_data")
 
-                                ),
+          ),
 
-                                tabPanel("Ngrams",
+        )
 
-                                         br(),
+      ),
 
-                                         p("Add description of this table..."),
+      tabItem(tabName = "notes",
 
-                                         tableOutput("ngrams")
+              fluidRow(
 
-                                 ),
+                box(title = "Overview", collapsible = TRUE, collapsed = FALSE, width = 12,
 
-                                tabPanel("Plot",
+                    p(paste("These are overview notes...",
+                            sep = " "))
 
-                                        br(),
+                )
 
-                                        p("Add description of this plot chart..."),
+              )
 
-                                        plotOutput("plot"),
+      )
 
-                                ),
+    )
 
-                                tabPanel("Notes",
+  )
 
-                                        br(),
+)
 
-                                        includeHTML("notes.html")
+server <- function(input, output) {
 
-                                )
+  data <- eventReactive(input$file_name, {
 
-                        ) # tabsetPanel
+    read_source(as.character(input$file_name$datapath))
 
-                ) # mainPanel
+  })
 
-        ) # sidebarLayout
+  prediction <- eventReactive(input$predict, {
 
-) # fluidPage
+    ngram_predictor(input$input_phrase, data())
 
-server <- function(input, output, session) {
+  })
 
-        dataset <- eventReactive(input$file_name, {
+  output$source_data <- renderTable({
 
-                read_source(as.character(input$file_name$datapath))
+    data()
 
-        })
+  })
 
-        output$source_data <- renderTable({
+  output$predicted_word <- renderValueBox({
 
-                dataset()
+    valueBox(get_predicted_word(prediction()),
+             "is the most likely next word in your phrase",
+             icon = icon("angles-left"))
 
-        })
+  })
 
-        prediction <- eventReactive(input$predict, {
+  output$plot <- renderPlotly({
 
-                ngram_predictor(input$input_phrase,
-                                dataset(),
-                                input$n,
-                                input$dec_pos,
-                                input$min_count,
-                                input$top_results)
+    get_plot(prediction())
 
-        })
-
-        output$predicted_word <- renderText({
-
-                get_predicted_word(prediction())
-
-        })
-
-        output$ngrams <- renderTable({
-
-                prediction()
-
-        })
-
-        output$plot <- renderPlot({
-
-                get_plot(prediction())
-
-        })
+  })
 
 }
 

@@ -427,7 +427,6 @@ get_predicted_word <- function(tbl) {
 
         })
 
-
         return(predicted_word)
 
 }
