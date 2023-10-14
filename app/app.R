@@ -103,6 +103,15 @@ ui <- dashboardPage(
 
           ),
 
+          box(title = "Text Heatmap", collapsible = TRUE, collapsed = TRUE, width = 12,
+
+              p(paste("The plot below shows...",
+                      sep = " ")),
+
+              plotlyOutput("heatmap"),
+
+          )
+
         )
 
       ),
@@ -113,8 +122,9 @@ ui <- dashboardPage(
 
                 box(title = "Overview", collapsible = TRUE, collapsed = FALSE, width = 12,
 
-                    p(paste("These are overview notes...",
-                            sep = " "))
+                  p("This is a test."),
+
+                  htmlOutput("notes")
 
                 )
 
@@ -138,7 +148,7 @@ server <- function(input, output) {
 
   prediction <- eventReactive(input$predict, {
 
-    ngram_predictor(input$input_phrase, data())
+    ngram_predictor(input$input_phrase, data(), n = input$n, min_count = input$min_count)
 
   })
 
@@ -159,6 +169,18 @@ server <- function(input, output) {
   output$plot <- renderPlotly({
 
     get_plot(prediction())
+
+  })
+
+  output$heatmap <- renderPlotly({
+
+    # get_heatmap(data())
+
+  })
+
+  output$notes <- renderUI({
+
+    tags$iframe(frameborder = "0", src = "html/notes.html")
 
   })
 

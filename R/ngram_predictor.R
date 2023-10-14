@@ -460,3 +460,36 @@ get_plot <- function(df) {
         return(p)
 
 }
+
+get_heatmap <- function(df) {
+
+  tryCatch({
+
+    p <- ggplot(df, aes(x = ngram, y = frequency, fill = frequency)) +
+            geom_tile() +
+            scale_fill_gradient(low = "lightblue",
+                                high = "darkblue") +
+            theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+            labs(title = "Text Heatmap of Word Frequencies",
+                 x = "Ngrams",
+                 y = "Frequency")
+
+  }, warning = function(w) {
+
+          warning(paste("get_heatmap: ", w, sep = ""))
+
+          return(NULL)
+
+  }, error = function(e) {
+
+          stop(paste("get_heatmap: ", e, sep = ""))
+
+          return(NULL)
+
+  }, finally = {
+
+  })
+
+  return(p)
+
+}
