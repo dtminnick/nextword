@@ -1,10 +1,13 @@
 Package: nextword
-Title: What the Package Does (One Line, Title Case)
+Title: Next Word Prediction Using N-grams
 Version: 0.0.0.9000
 Authors@R: 
     person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+Description: A package for predicting the next word in a text sequence using
+    n-gram language models. Provides functions to create n-grams from text
+    corpora, compute frequencies, and predict likely next words based on
+    input phrases.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
@@ -14,7 +17,12 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
-    magrittr
+    dplyr,
+    ggplot2,
+    magrittr,
+    quanteda,
+    readr,
+    stringr
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5.0)
 LazyData: true

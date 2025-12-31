@@ -1,14 +1,17 @@
 
-library("ggplot2")
-library("magrittr")
-library("plotly")
-library("shiny")
-library("shinyBS")
-library("shinydashboard")
+library(ggplot2)
+library(magrittr)
+library(nextword)
+library(plotly)
+library(shiny)
+library(shinyBS)
+library(shinydashboard)
 
-source("../R/ngram_predictor.R")
-
-addResourcePath("html", "c:/R/Packages/nextword/html")
+# Add resource path for HTML files (use relative path)
+html_dir <- file.path(getwd(), "html")
+if (dir.exists(html_dir)) {
+  addResourcePath("html", html_dir)
+}
 
 ui <- dashboardPage(
 
@@ -62,7 +65,7 @@ ui <- dashboardPage(
 
             sliderInput("min_count", "Minimum Ngram Count", value = 1, min = 1, max = 10),
 
-            p(paste("And click the button below to generate a predicton.",
+            p(paste("And click the button below to generate a prediction.",
                     sep = " ")),
 
             actionButton("predict", "Generate Prediction")
@@ -141,15 +144,27 @@ ui <- dashboardPage(
 server <- function(input, output) {
 
   data <- eventReactive(input$file_name, {
-
-    read_source(as.character(input$file_name$datapath))
-
+    if (is.null(input$file_name)) {
+      return(NULL)
+    }
+    tryCatch({
+      read_source(as.character(input$file_name$datapath))
+    }, error = function(e) {
+      showNotification(paste("Error reading file:", e$message), type = "error")
+      NULL
+    })
   })
 
   prediction <- eventReactive(input$predict, {
-
-    ngram_predictor(input$input_phrase, data(), n = input$n, min_count = input$min_count)
-
+    if (is.null(data()) || is.null(input$input_phrase) || input$input_phrase == "") {
+      return(NULL)
+    }
+    tryCatch({
+      ngram_predictor(input$input_phrase, data(), n = input$n, min_count = input$min_count)
+    }, error = function(e) {
+      showNotification(paste("Error generating prediction:", e$message), type = "error")
+      NULL
+    })
   })
 
   output$source_data <- renderTable({
@@ -159,23 +174,52 @@ server <- function(input, output) {
   })
 
   output$predicted_word <- renderValueBox({
-
-    valueBox(get_predicted_word(prediction()),
-             "is the most likely next word in your phrase",
+    pred_word <- NULL
+    if (!is.null(prediction())) {
+      pred_word <- tryCatch({
+        get_predicted_word(prediction())
+      }, error = function(e) {
+        NULL
+      })
+    }
+    valueBox(value = ifelse(is.null(pred_word), "N/A", pred_word),
+             subtitle = "is the most likely next word in your phrase",
              icon = icon("angles-left"))
-
   })
 
   output$plot <- renderPlotly({
-
-    get_plot(prediction())
-
+    if (is.null(prediction())) {
+      return(NULL)
+    }
+    tryCatch({
+      p <- get_plot(prediction())
+      if (!is.null(p)) {
+        plotly::ggplotly(p)
+      } else {
+        NULL
+      }
+    }, error = function(e) {
+      NULL
+    })
   })
 
   output$heatmap <- renderPlotly({
-
-    # get_heatmap(data())
-
+    # Heatmap functionality can be implemented here if needed
+    # if (!is.null(data())) {
+    #   tryCatch({
+    #     p <- get_heatmap(data())
+    #     if (!is.null(p)) {
+    #       plotly::ggplotly(p)
+    #     } else {
+    #       NULL
+    #     }
+    #   }, error = function(e) {
+    #     NULL
+    #   })
+    # } else {
+    #   NULL
+    # }
+    NULL
   })
 
   output$notes <- renderUI({
